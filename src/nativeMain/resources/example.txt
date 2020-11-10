@@ -1,0 +1,18 @@
+if(token.name in arrayOf(TRUE, FALSE)) {
+    advance()
+    return ObjectNode(parent, token, token.value as Boolean)
+}
+
+Factor(TRUE, FALSE)
+    .nodeFunction { parent, token -> ObjectNode(parent, token, token.value as Boolean) }
+
+if(token.name == LPAREN) {
+    advance()
+    val expression = parse(parent)
+
+    if(current.name == RPAREN) {
+        advance()
+        return expression
+    }
+}
+

@@ -49,6 +49,7 @@ enum class TokenType(
     LPAREN("("), RPAREN(")"),
     LBRACE("{"), RBRACE("}"),
     FUNCTION("fun"),
+    IF("if"), ELSE("else"),
     IDENTIFIER(
         pattern = "[A-z][A-z0-9_]*",
         copyValue = true, irrelevant = true

@@ -141,4 +141,18 @@ class InterpreterTest {
         val output = interpretText(input)
         assertEquals(10, output)
     }
+
+    @Test
+    fun `if statement`() {
+        val input = "if(5 > 2) 5"
+        val output = interpretText(input)
+        assertEquals(5, output)
+    }
+
+    @Test
+    fun `if else statement`() {
+        val input = "if(2 > 4) 10 else 2"
+        val output = interpretText(input)
+        assertEquals(2, output)
+    }
 }

@@ -4,8 +4,8 @@ import extension.*
 import parser.lexer.token.Token
 import parser.lexer.token.TokenType.*
 
-class BinaryOperation(parent: Node?, val left: Node, val operation: Token, val right: Node) :
-    Node(parent, left.start, right.end) {
+class BinaryOperation(val left: Node, val operation: Token, val right: Node) :
+    Node(left.start, right.end) {
     override fun visit(): Any? {
         val left = left.visit()
         val right = right.visit()

@@ -2,7 +2,7 @@ package parser.parser.nodes
 
 import parser.lexer.token.Token
 
-class BlockNode(parent: Node?, start: Token, end: Token, val children: List<Node>) : Node(parent, start, end) {
+class BlockNode(start: Token, end: Token, val children: List<Node>) : Node(start, end) {
 
     override fun visit(): Any? {
         var result: Any? = null

@@ -69,3 +69,9 @@ operator fun Number.compareTo(other: Number) = when (this) {
     }
     else -> throw IllegalArgumentException("Undefined arithmetic operation")
 }
+
+operator fun Number.unaryMinus()= when(this) {
+    is Int -> -this
+    is Float -> -this
+    else -> throw IllegalArgumentException("undefined arithmetic operation")
+}

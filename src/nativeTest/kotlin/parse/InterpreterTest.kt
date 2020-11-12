@@ -14,6 +14,13 @@ class InterpreterTest {
     }
 
     @Test
+    fun `division expression`() {
+        val input = "100 / 5"
+        val output = interpretText(input)
+        assertEquals(20, output)
+    }
+
+    @Test
     fun `greater than`() {
         val input = "5 > 2"
         val output = interpretText(input)
@@ -25,6 +32,13 @@ class InterpreterTest {
         val input = "5 < 2"
         val output = interpretText(input)
         assertEquals(false, output)
+    }
+
+    @Test
+    fun `unary operator`() {
+        val input = "-100"
+        val output = interpretText(input)
+        assertEquals(-100, output)
     }
 
     @Test
@@ -154,5 +168,42 @@ class InterpreterTest {
         val input = "if(2 > 4) 10 else 2"
         val output = interpretText(input)
         assertEquals(2, output)
+    }
+
+    @Test
+    fun `assign variable`() {
+        val input = "a = 100"
+        val output = interpretText(input)
+        assertEquals(100, output)
+    }
+
+    @Test
+    fun `assign and access variable`() {
+        val input = """
+            a = 20
+            a + 100
+        """.trimIndent()
+        val output = interpretText(input)
+        assertEquals(120, output)
+    }
+
+    @Test
+    fun `access variable without context`() {
+        val input = """
+            a = 20
+            a
+        """.trimIndent()
+        val output = interpretText(input)
+        assertEquals(20, output)
+    }
+
+    @Test
+    fun `unary minus`() {
+        val input = """
+            a = 20
+            -a
+        """.trimIndent()
+        val output = interpretText(input)
+        assertEquals(-20, output)
     }
 }

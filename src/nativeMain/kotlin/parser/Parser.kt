@@ -1,21 +1,26 @@
-package parser.parser
+package parser
 
-import parser.ParseException
 import parser.lexer.token.Token
 import parser.lexer.token.TokenType
 import parser.lexer.token.TokenType.*
-import parser.parser.nodes.*
+import nodes.nodes.*
+import parser.lexer.token.ObjType
 
 class Parser(tokens: List<Token>) {
 
     companion object {
         /** In order of priority, Low -> High */
         val OPERATORS = arrayOf(
+            arrayOf(ASSIGN),
             arrayOf(EQUALS, NOT_EQUAL),
             arrayOf(AND, OR),
             arrayOf(LESS_THAN, GREATER_THAN, LT_EQUAL, GT_EQUAL),
             arrayOf(PLUS, MINUS),
             arrayOf(MULTIPLY, DIVIDE)
+        )
+
+        val UNARY_OPERATORS = arrayOf(
+            PLUS, MINUS
         )
     }
 
@@ -27,13 +32,19 @@ class Parser(tokens: List<Token>) {
     }
 
     fun parseNodes(): Node {
-        val result = parse()
+        val start = current
+        val children = mutableListOf<Node>()
+
+        while(iterator.hasNext()) {
+            val result = parse()
+            children.add(result)
+        }
 
         if (current.name != EOF) {
             throw ParseException("Unexpected extraneous token: $current", current)
         }
 
-        return result
+        return FileNode(start, current, children)
     }
 
     private fun advance() {
@@ -65,6 +76,8 @@ class Parser(tokens: List<Token>) {
     }
 
     fun factor(): Node {
+        skipNewlines()
+
         val token = current
 
         if (token.name == LBRACE) {
@@ -75,6 +88,7 @@ class Parser(tokens: List<Token>) {
             while (current.name != RBRACE) {
                 val node = parse()
                 nodes.add(node)
+                skipNewlines()
             }
             val end = current
             advance()
@@ -94,12 +108,17 @@ class Parser(tokens: List<Token>) {
 
         if (token.name == STRING) {
             advance()
-            return ObjectNode(token, token.value as String)
+            return ObjectNode(token, token.value as String, ObjType.STRING)
         }
 
         if (token.name in arrayOf(TRUE, FALSE)) {
             advance()
-            return ObjectNode(token, token.value as Boolean)
+            return ObjectNode(token, token.value as Boolean, ObjType.BOOLEAN)
+        }
+
+        if(token.name == IDENTIFIER) {
+            advance()
+            return VarAccess(token)
         }
 
         if (token.name == LPAREN) {
@@ -114,6 +133,11 @@ class Parser(tokens: List<Token>) {
 
         if (token.name == IF) {
             return parseIfStatement(token)
+        }
+
+        if(token.name in UNARY_OPERATORS) {
+            advance()
+            return UnaryOperation(token, current, token.name, parse())
         }
 
         throw ParseException("Unexpected token $token", token)
@@ -143,5 +167,11 @@ class Parser(tokens: List<Token>) {
         }
 
         throw ParseException("Expected $tokenType, got ${current.name}", current)
+    }
+
+    private fun skipNewlines() {
+        while(current.name == NEWLINE) {
+            advance()
+        }
     }
 }

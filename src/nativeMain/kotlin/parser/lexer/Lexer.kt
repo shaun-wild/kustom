@@ -9,7 +9,7 @@ import parser.lexer.token.TokenType.values
 class Lexer(text: String, val file: String = "stdin") {
 
     companion object {
-        val IGNORE = arrayOf('\n', ' ', '\t')
+        val IGNORE = arrayOf(' ', '\t')
     }
 
     val iterator = text.toCharArray().iterator()
@@ -53,6 +53,8 @@ class Lexer(text: String, val file: String = "stdin") {
         while (current != null) {
             token += current
             val tokens = listTokens(token)
+
+//            println("$token becomes $tokens")
 
             if (tokens.size == 1) {
                 val (tokenType) = tokens

@@ -30,7 +30,9 @@ enum class TokenType(
     /**
      * A custom matcher for a given string.
      * */
-    val customMatcher: ((String) -> Boolean)? = null
+    val customMatcher: ((String) -> Boolean)? = null,
+
+    val relatedTypes: Array<ObjType> = arrayOf()
 ) {
     INT(pattern = "\\d+", mapper = String::toInt),
     FLOAT(pattern = "(?:\\d*?\\d+[Ff]|\\d*\\.\\d*[Ff]?)", mapper = String::toFloat),
@@ -38,23 +40,36 @@ enum class TokenType(
     COMMENT(pattern = "\\/\\/.*", discard = true),
     BLOCK_COMMENT(
         customMatcher = { (it == "/" || it.startsWith("/*")) && (it.endsWith("*/") || !it.contains("*/")) },
+        irrelevant = true,
         discard = true
     ),
     TRUE("true", mapper = String::toBoolean), FALSE("false", mapper = String::toBoolean),
-    PLUS("+"), MINUS("-"), MULTIPLY("*"), DIVIDE("/"), ASSIGN("="),
-    LESS_THAN("<"), GREATER_THAN(">"), GT_EQUAL(">="), LT_EQUAL("<="),
+    PLUS("+", relatedTypes = arrayOf(ObjType.NUMBER, ObjType.STRING)),
+    MINUS("-", relatedTypes = arrayOf(ObjType.NUMBER)),
+    MULTIPLY("*", relatedTypes = arrayOf(ObjType.NUMBER)),
+    DIVIDE("/", relatedTypes = arrayOf(ObjType.NUMBER)),
+    ASSIGN("="),
+    LESS_THAN("<", relatedTypes = arrayOf(ObjType.NUMBER)),
+    GREATER_THAN(">", relatedTypes = arrayOf(ObjType.NUMBER)),
+    GT_EQUAL(">=", relatedTypes = arrayOf(ObjType.NUMBER)),
+    LT_EQUAL("<=", relatedTypes = arrayOf(ObjType.NUMBER)),
     EQUALS("=="), NOT_EQUAL("!="),
-    AND("&&"), OR("||"),
+    AND("&&", relatedTypes = arrayOf(ObjType.BOOLEAN)),
+    OR("||", relatedTypes = arrayOf(ObjType.BOOLEAN)),
     VAR("var"), VAL("val"),
     LPAREN("("), RPAREN(")"),
     LBRACE("{"), RBRACE("}"),
+    ELVIS("?:"),
+    PIPELINE("|>"),
     FUNCTION("fun"),
-    IF("if"), ELSE("else"),
+    IF("if"),
+    ELSE("else"),
+    NULL("null"),
     IDENTIFIER(
         pattern = "[A-z][A-z0-9_]*",
         copyValue = true, irrelevant = true
     ),
-    EOF;
+    NEWLINE(pattern = "\n"), EOF;
 
     val regex = (if (match != null) Regex.escape(match) else pattern).toRegex()
 

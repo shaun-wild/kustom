@@ -2,7 +2,7 @@ import interpreter.Interpreter
 import interpreter.underlineError
 import parser.ParseException
 import parser.lexer.Lexer
-import parser.parser.Parser
+import parser.Parser
 
 fun main() {
     val interpreter = Interpreter()

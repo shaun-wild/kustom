@@ -25,12 +25,6 @@ class ParserTest {
     }
 
     @Test
-    fun `parser exception for extraneous identifier`() {
-        val input = "500lol"
-        assertFailsWith<ParseException> { parseText(input) }
-    }
-
-    @Test
     fun `parse order of operations`() {
         val input = "5 + 2 * 4"
         val output = parseText(input)
@@ -71,7 +65,7 @@ class ParserTest {
     }
 
     @Test
-    fun `body parse`() {
+    fun `block parse`() {
         val input = """
             {
                 25 + 2
@@ -81,5 +75,13 @@ class ParserTest {
         val output = parseText(input)
 
         assertToString("{(25 + 2) hello}", output)
+    }
+
+    @Test
+    fun `assign variable`() {
+        val input = "a = 5"
+        val output = parseText(input)
+
+        assertToString("(set IDENTIFIER (a) = 5)", output)
     }
 }

@@ -43,6 +43,15 @@ class LexerTest {
     }
 
     @Test
+    fun `lex division`() {
+        val input = "100 / 5"
+        val output = Lexer(input)
+            .lex()
+
+        assertEquals(listOf(token(INT, 100), token(DIVIDE), token(INT, 5), EOF), output)
+    }
+
+    @Test
     fun `lex string`() {
         val input = "\"test\""
         val output = Lexer(input)
@@ -150,6 +159,27 @@ class LexerTest {
         assertEquals(
             listOf(token(INT, 5), token(PLUS), token(BLOCK_COMMENT), token(INT, 2), EOF), output
         )
+    }
+
+    @Test
+    fun `unary minus identifier`() {
+        val input = "-a"
+        val output = Lexer(input)
+            .lex()
+
+        assertEquals(listOf(token(MINUS), token(IDENTIFIER, "a"), EOF), output)
+    }
+
+    @Test
+    fun `lex newline`() {
+        val input = """
+            a
+            b
+        """.trimIndent()
+        val output = Lexer(input)
+            .lex()
+
+        assertEquals(listOf(token(IDENTIFIER, "a"), token(NEWLINE), token(IDENTIFIER, "b"), EOF), output)
     }
 
     @Test

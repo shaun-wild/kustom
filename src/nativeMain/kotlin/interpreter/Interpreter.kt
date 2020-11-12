@@ -1,9 +1,11 @@
 package interpreter
 
-import parser.parser.nodes.Node
+import nodes.nodes.Node
 
 class Interpreter {
 
-    fun interpret(root: Node)= root.visit()
+    val context = Context()
+
+    fun interpret(root: Node)= root.visit(context)
 
 }

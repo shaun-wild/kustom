@@ -3,7 +3,7 @@ import parser.lexer.Lexer
 import parser.lexer.Position
 import parser.lexer.token.Token
 import parser.lexer.token.TokenType
-import parser.parser.Parser
+import parser.Parser
 import kotlin.test.assertEquals
 
 val TEST_POSITION = Position("test", 0, 0)

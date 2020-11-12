@@ -1,14 +1,22 @@
-package parser.parser.nodes
+package nodes.nodes
 
 import extension.*
+import interpreter.Context
+import parser.lexer.token.ObjType
 import parser.lexer.token.Token
 import parser.lexer.token.TokenType.*
 
 class BinaryOperation(val left: Node, val operation: Token, val right: Node) :
     Node(left.start, right.end) {
-    override fun visit(): Any? {
-        val left = left.visit()
-        val right = right.visit()
+
+    init {
+        left.parent = this
+        right.parent = this
+    }
+
+    override fun visit(context: Context): Any? {
+        val left = left.visit(context)
+        val right = right.visit(context)
 
         if (operation.name == EQUALS) {
             return left == right
@@ -35,6 +43,16 @@ class BinaryOperation(val left: Node, val operation: Token, val right: Node) :
                 AND -> left and right
                 OR -> left or right
                 else -> throw fail("Undefined operation $left ${operation.name} $right")
+            }
+        }
+
+        if (left is Token) {
+            if (left.name == IDENTIFIER) {
+                val varName = left.value as String
+
+                if (right != null) {
+                    return context.setVariable(ObjType.getType(right::class), varName, true, right)
+                }
             }
         }
 

@@ -1,5 +1,12 @@
 package parser.lexer.token
 
+import parser.lexer.token.ObjType.*
+
+/**
+ * TokenType is an enum representing all of the token's and their respective matches.
+ * Tokens should be ordered by specificity, from highest, to lowest. For example,
+ * FLOAT is above INT because we want a successful float match to take precedence.
+ * */
 enum class TokenType(
     /**
      * A string to direct match against for this token.
@@ -9,10 +16,7 @@ enum class TokenType(
     /**
      * A regular expression to match this token type against.
      * */
-    pattern: String = "",
-
-    /** An irrelevant token type will be ignored if there are multiple token matches. */
-    val irrelevant: Boolean = false,
+    pattern: String? = null,
 
     /**
      * Whether this token should be discarded by the parser.
@@ -27,63 +31,56 @@ enum class TokenType(
      * */
     val copyValue: Boolean = (mapper != null),
 
-    /**
-     * A custom matcher for a given string.
-     * */
-    val customMatcher: ((String) -> Boolean)? = null,
-
     val relatedTypes: Array<ObjType> = arrayOf()
 ) {
+    FLOAT(pattern = "\\d+[Ff]|\\d*\\.\\d+[fF]?", mapper = String::toFloat),
     INT(pattern = "\\d+", mapper = String::toInt),
-    FLOAT(pattern = "(?:\\d*?\\d+[Ff]|\\d*\\.\\d*[Ff]?)", mapper = String::toFloat),
-    STRING(pattern = "(?:\".*[^\\\\]\"|\"\")", copyValue = true, mapper = { it.subSequence(1, it.length - 1) }),
+    STRING(pattern = "\"(?:[^\"]|\\\\\")*[^\\\\]\"", copyValue = true, mapper = { it.subSequence(1, it.length - 1) }),
     COMMENT(pattern = "\\/\\/.*", discard = true),
-    BLOCK_COMMENT(
-        customMatcher = { (it == "/" || it.startsWith("/*")) && (it.endsWith("*/") || !it.contains("*/")) },
-        irrelevant = true,
-        discard = true
-    ),
+    BLOCK_COMMENT(pattern = "\\/\\*.*\\*\\/", discard = true),
     TRUE("true", mapper = String::toBoolean), FALSE("false", mapper = String::toBoolean),
-    PLUS("+", relatedTypes = arrayOf(ObjType.NUMBER, ObjType.STRING)),
-    MINUS("-", relatedTypes = arrayOf(ObjType.NUMBER)),
-    MULTIPLY("*", relatedTypes = arrayOf(ObjType.NUMBER)),
-    DIVIDE("/", relatedTypes = arrayOf(ObjType.NUMBER)),
-    MODULUS("%", relatedTypes = arrayOf(ObjType.NUMBER)),
+    PLUS("+", relatedTypes = arrayOf(NUMBER, ObjType.STRING)),
+    MINUS("-", relatedTypes = arrayOf(NUMBER)),
+    MULTIPLY("*", relatedTypes = arrayOf(NUMBER)),
+    DIVIDE("/", relatedTypes = arrayOf(NUMBER)),
+    MODULUS("%", relatedTypes = arrayOf(NUMBER)),
+    GT_EQUAL(">=", relatedTypes = arrayOf(NUMBER)),
+    LT_EQUAL("<=", relatedTypes = arrayOf(NUMBER)),
+    EQUALS("=="),
+    NOT_EQUAL("!="),
     ASSIGN("="),
-    LESS_THAN("<", relatedTypes = arrayOf(ObjType.NUMBER)),
-    GREATER_THAN(">", relatedTypes = arrayOf(ObjType.NUMBER)),
-    GT_EQUAL(">=", relatedTypes = arrayOf(ObjType.NUMBER)),
-    LT_EQUAL("<=", relatedTypes = arrayOf(ObjType.NUMBER)),
-    EQUALS("=="), NOT_EQUAL("!="),
-    AND("&&", relatedTypes = arrayOf(ObjType.BOOLEAN)),
-    OR("||", relatedTypes = arrayOf(ObjType.BOOLEAN)),
-    VAR("var"), VAL("val"),
-    LPAREN("("), RPAREN(")"),
-    LBRACE("{"), RBRACE("}"),
-    COMMA(","),
+    PIPELINE("->"),
     ELVIS("?:"),
-    PIPELINE("|>"),
+    LESS_THAN("<", relatedTypes = arrayOf(NUMBER)),
+    GREATER_THAN(">", relatedTypes = arrayOf(NUMBER)),
+    NOT("!", relatedTypes = arrayOf(BOOLEAN)),
+    AND("&&", relatedTypes = arrayOf(BOOLEAN)),
+    OR("||", relatedTypes = arrayOf(BOOLEAN)),
+    VAR("var"),
+    VAL("val"),
+    LPAREN("("),
+    RPAREN(")"),
+    LBRACE("{"),
+    RBRACE("}"),
+    COMMA(","),
     FUNCTION("fun"),
     IF("if"),
     ELSE("else"),
     NULL("null"),
     IDENTIFIER(
         pattern = "[A-z][A-z0-9_]*",
-        copyValue = true, irrelevant = true
+        copyValue = true
     ),
-    NEWLINE(pattern = "\n"), EOF;
+    NEWLINE("\n"), EOF;
 
-    val regex = (if (match != null) Regex.escape(match) else pattern).toRegex()
+    companion object {
+        val REGEX = values()
+            .filter { it.regex != null }
+            .joinToString("|") { "(${it.regex!!.pattern})" }
+            .toRegex(setOf(RegexOption.DOT_MATCHES_ALL))
+    }
 
-    /**
-     * @return true if the current token may match the given string.
-     * */
-    fun matches(text: String) = customMatcher?.invoke(text) ?: regex.matches(text)
-
-    /**
-     * @return true if the given text is this token.
-     * */
-    fun valid(text: String) = regex.matches(text)
+    val regex = (if (match != null) Regex.escape(match) else pattern)?.toRegex()
 
     override fun toString(): String {
         if (match != null) {

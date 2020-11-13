@@ -21,6 +21,12 @@ class UnaryOperation(start: Token, end: Token, val operation: TokenType, val nod
             }
         }
 
+        if(value is Boolean) {
+            if(operation == TokenType.NOT) {
+                return !value
+            }
+        }
+
         throw ParseException("Undefined unary operation $operation$value", start, end)
     }
 }

@@ -20,7 +20,7 @@ class Parser(tokens: List<Token>) {
         )
 
         val UNARY_OPERATORS = arrayOf(
-            PLUS, MINUS
+            PLUS, MINUS, NOT
         )
     }
 

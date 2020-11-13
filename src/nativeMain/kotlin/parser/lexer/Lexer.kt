@@ -1,98 +1,57 @@
 package parser.lexer
 
-import parser.ParseException
 import parser.lexer.token.Token
 import parser.lexer.token.TokenType
-import parser.lexer.token.TokenType.EOF
-import parser.lexer.token.TokenType.values
 
-class Lexer(text: String, val file: String = "stdin") {
-
-    companion object {
-        val IGNORE = arrayOf(' ', '\t')
-    }
-
-    val iterator = text.toCharArray().iterator()
-    var current: Char? = iterator.next()
-
-    var pos: Position = Position(file, 0, 0)
+class Lexer(val text: String, val file: String = "stdin") {
 
     fun lex(): List<Token> {
-        val result = mutableListOf<Token>()
-
-        while (current != null) {
-            if (current in IGNORE) {
-                advance()
-                continue
+        val result = TokenType.REGEX.findAll(text)
+            .flatMap {
+                it.groups.mapIndexed { i, match ->
+                    if (i > 0) {
+                        if (match != null) {
+                            val tokenType = TokenType.values()[i - 1]
+                            val value = if (tokenType.copyValue) match.value else null
+                            matchToToken(tokenType, value, match.range)
+                        } else null
+                    } else null
+                }.filterNotNull()
             }
+            .toMutableList()
 
-            val next = nextToken()
-            result += next
-        }
-
-        result += Token(EOF, start = pos, end = pos)
+        result += Token(TokenType.EOF, null, indexToPosition(text.length), indexToPosition(text.length))
 
         return result
     }
 
-    private fun advance() {
-        if (iterator.hasNext()) {
-            current = iterator.next()
-            pos = pos.copy(pos = pos.pos + 1, line = if (current == '\n') pos.line + 1 else pos.line)
-        } else {
-            current = null
-        }
+    private fun matchToToken(tokenType: TokenType, value: String?, range: IntRange): Token {
+        val tokenValue = if (tokenType.copyValue) {
+            if(value != null) {
+                tokenType.mapper?.invoke(value) ?: value
+            } else value
+        } else null
+
+        return Token(
+            tokenType,
+            tokenValue,
+            indexToPosition(range.first),
+            indexToPosition(range.last)
+        )
     }
 
-    private fun nextToken(): Token {
-        var token = ""
-        val start = pos.copy()
+    private fun indexToPosition(index: Int): Position {
+        var line = 0
+        var pos = 0
 
-        val potentialResults = mutableListOf<Token>()
-
-        while (current != null) {
-            token += current
-            val tokens = listTokens(token)
-
-//            println("$token becomes $tokens")
-
-            if (tokens.size == 1) {
-                val (tokenType) = tokens
-                potentialResults.add(processToken(tokenType, token, start, pos))
-            } else if (potentialResults.isNotEmpty() && tokens.isEmpty()) {
-                break
+        for(i in 0 until index) {
+            pos++
+            if(text[i] == '\n') {
+                pos = 0
+                line++
             }
-
-            advance()
         }
 
-        val end = pos.copy()
-
-        if (potentialResults.isEmpty()) {
-            throw ParseException(file, "Could not tokenize $token", start, end)
-        } else {
-            return potentialResults.last()
-        }
-    }
-
-    private fun processToken(tokenType: TokenType, value: String, start: Position, end: Position): Token {
-        val tokenValue = tokenType.mapper?.invoke(value) ?: value
-
-        if (tokenType.copyValue) {
-            return Token(tokenType, tokenValue, start, end)
-        } else {
-            return Token(tokenType, start = start, end = end)
-        }
-    }
-
-    private fun listTokens(token: String): List<TokenType> {
-        val tokenTypes = values()
-            .filter { it.matches(token) }
-
-        if (tokenTypes.size > 1) {
-            return tokenTypes.filter { !it.irrelevant }
-        }
-
-        return tokenTypes
+        return Position(file, line, pos)
     }
 }

@@ -251,4 +251,14 @@ class InterpreterTest {
         val output = interpretText(input)
         assertEquals(10000, output)
     }
+
+    @Test
+    fun `not boolean`() {
+        val input = """
+            a = true
+            !a
+        """.trimIndent()
+        val output = interpretText(input)
+        assertEquals(false, output)
+    }
 }

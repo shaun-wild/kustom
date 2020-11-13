@@ -112,4 +112,11 @@ class ParserTest {
         val output = parseText(input)
         assertToString("fun b(int, value) if((get IDENTIFIER (value) > 0)) true else false", output)
     }
+
+    @Test
+    fun `create array`() {
+        val input = "a = [1, 2, 3]"
+        val output = parseText(input)
+        assertToString("(set IDENTIFIER (a) = [1, 2, 3])", output)
+    }
 }

@@ -68,6 +68,10 @@ class Parser(tokens: List<Token>) {
             left = parseFunctionCall(left)
         }
 
+        if(current.name == LSQUARE) {
+            left = parseArrayAccess(left)
+        }
+
         while (current.name in OPERATORS[level]) {
             val operation = current
             advance()
@@ -148,7 +152,31 @@ class Parser(tokens: List<Token>) {
             return parseFunction()
         }
 
+        if(token.name == LSQUARE) {
+            return parseArrayNode()
+        }
+
         throw ParseException("Unexpected token $token", token)
+    }
+
+    private fun parseArrayAccess(node: Node): Node {
+        val start = current
+        advance()
+        val index = parse()
+        require(RSQUARE)
+        return ArrayAccess(start, current, node, index)
+    }
+
+    private fun parseArrayNode(): Node {
+        val start = current
+        advance()
+        val elements = requireUntil(RSQUARE) {
+            val element = parse()
+            optional(COMMA)
+            element
+        }
+
+        return ArrayCreate(start, current, elements)
     }
 
     private fun parseIfStatement(token: Token): Node {

@@ -65,19 +65,21 @@ enum class TokenType(
     RPAREN(")"),
     LBRACE("{"),
     RBRACE("}"),
+    LSQUARE("["),
+    RSQUARE("]"),
     COMMA(","),
     FUNCTION("fun"),
     IF("if"),
     ELSE("else"),
     NULL("null"),
     IDENTIFIER(
-        pattern = "[A-z][A-z0-9_]*",
+        pattern = "[A-Za-z_]\\w*",
         copyValue = true
     ),
     NEWLINE("\n"), EOF;
 
     companion object {
-        val KEYWORD_REGEX = "[A-z][A-z0-9_]*".toRegex()
+        val KEYWORD_REGEX = "[A-Za-z_]\\w*".toRegex()
 
         val REGEX = values()
             .filter { it.regex != null }
@@ -87,7 +89,7 @@ enum class TokenType(
 
     val regex = if (match != null) {
         val matchRegex = Regex.escape(match)
-        if (keyword) "(?<![A-z0-9_])${matchRegex}(?![A-z0-9_])" else matchRegex
+        if (keyword) "(?<!\\w)${matchRegex}(?!\\w)" else matchRegex
     } else {
         pattern
     }?.toRegex()

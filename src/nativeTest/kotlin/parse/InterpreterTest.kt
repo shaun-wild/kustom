@@ -261,4 +261,21 @@ class InterpreterTest {
         val output = interpretText(input)
         assertEquals(false, output)
     }
+
+    @Test
+    fun `create array`() {
+        val input = "[1, 2, 3]"
+        val output = interpretText(input)
+        assertEquals(listOf(1, 2, 3), output)
+    }
+
+    @Test
+    fun `access array`() {
+        val input = """
+            a = [1, 2, 3]
+            a[1]
+        """.trimIndent()
+        val output = interpretText(input)
+        assertEquals(2, output)
+    }
 }

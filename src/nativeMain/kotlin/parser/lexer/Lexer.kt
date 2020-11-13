@@ -17,8 +17,7 @@ class Lexer(val text: String, val file: String = "stdin") {
                         } else null
                     } else null
                 }.filterNotNull()
-            }
-            .toMutableList()
+            }.toMutableList()
 
         result += Token(TokenType.EOF, null, indexToPosition(text.length), indexToPosition(text.length))
 

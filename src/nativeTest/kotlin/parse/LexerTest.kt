@@ -174,8 +174,6 @@ class LexerTest {
         val output = Lexer(input)
             .lex()
 
-        println(TokenType.REGEX)
-
         assertEquals(listOf(token(IDENTIFIER, "value"), token(ASSIGN), token(INT, 5), EOF), output)
     }
 
@@ -189,6 +187,15 @@ class LexerTest {
             .lex()
 
         assertEquals(listOf(token(IDENTIFIER, "a"), token(NEWLINE), token(IDENTIFIER, "b"), EOF), output)
+    }
+
+    @Test
+    fun `array creation`() {
+        val input = "[1, 2]"
+        val output = Lexer(input)
+            .lex()
+
+        assertEquals(listOf(token(LSQUARE), token(INT, 1), token(COMMA), token(INT, 2), token(RSQUARE), EOF), output)
     }
 
 //    @Test

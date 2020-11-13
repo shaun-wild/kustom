@@ -7,6 +7,9 @@ version = "1.0-SNAPSHOT"
 repositories {
     mavenCentral()
 }
+
+
+
 kotlin {
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")
@@ -25,7 +28,12 @@ kotlin {
         }
     }
     sourceSets {
-        val nativeMain by getting
+        val nativeMain by getting {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-io-jvm:0.1.16")
+            }
+        }
+
         val nativeTest by getting
     }
 }

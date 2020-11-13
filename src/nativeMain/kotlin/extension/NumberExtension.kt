@@ -75,3 +75,17 @@ operator fun Number.unaryMinus()= when(this) {
     is Float -> -this
     else -> throw IllegalArgumentException("undefined arithmetic operation")
 }
+
+operator fun Number.rem(other: Number) = when (this) {
+    is Int -> when (other) {
+        is Int -> this % other
+        is Float -> this % other
+        else -> throw IllegalArgumentException("Undefined arithmetic operation")
+    }
+    is Float -> when (other) {
+        is Int -> this % other
+        is Float -> this % other
+        else -> throw IllegalArgumentException("Undefined arithmetic operation")
+    }
+    else -> throw IllegalArgumentException("Undefined arithmetic operation")
+}

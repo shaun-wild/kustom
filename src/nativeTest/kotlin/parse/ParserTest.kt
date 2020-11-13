@@ -84,4 +84,24 @@ class ParserTest {
 
         assertToString("(set IDENTIFIER (a) = 5)", output)
     }
+
+    @Test
+    fun `create function`() {
+        val input = """
+            fun doSomething(a) {
+                a
+            }
+        """.trimIndent()
+        val output = parseText(input)
+
+        assertToString("fun doSomething(a) {get IDENTIFIER (a)}", output)
+    }
+
+    @Test
+    fun `call function`() {
+        val input = "println(\"test\")"
+        val output = parseText(input)
+
+        assertToString("call <get IDENTIFIER (println)>(test)", output)
+    }
 }

@@ -31,9 +31,9 @@ class Context {
         return value
     }
 
-    fun pushContext(parent: Context): Context {
-        this.parent = parent
-        return this
+    fun pushContext(context: Context): Context {
+        context.parent = this
+        return context
     }
 
     fun popContext(): Context? {

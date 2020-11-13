@@ -1,0 +1,23 @@
+fun fizzBuzz(a) {
+    result = ""
+    if(a % 3 == 0) {
+        result = result + "Fizz"
+    }
+
+    if(a % 5 == 0) {
+        result = result + "Buzz"
+    }
+
+    if(result == "") a else result
+}
+
+fizzBuzz(0)
+fizzBuzz(1)
+fizzBuzz(2)
+fizzBuzz(3)
+fizzBuzz(4)
+fizzBuzz(5)
+fizzBuzz(6)
+fizzBuzz(14)
+fizzBuzz(15)
+fizzBuzz(16)

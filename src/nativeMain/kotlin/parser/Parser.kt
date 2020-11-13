@@ -1,10 +1,10 @@
 package parser
 
+import nodes.nodes.*
+import parser.lexer.token.ObjType
 import parser.lexer.token.Token
 import parser.lexer.token.TokenType
 import parser.lexer.token.TokenType.*
-import nodes.nodes.*
-import parser.lexer.token.ObjType
 
 class Parser(tokens: List<Token>) {
 
@@ -16,7 +16,7 @@ class Parser(tokens: List<Token>) {
             arrayOf(AND, OR),
             arrayOf(LESS_THAN, GREATER_THAN, LT_EQUAL, GT_EQUAL),
             arrayOf(PLUS, MINUS),
-            arrayOf(MULTIPLY, DIVIDE)
+            arrayOf(MULTIPLY, DIVIDE, MODULUS)
         )
 
         val UNARY_OPERATORS = arrayOf(
@@ -35,7 +35,7 @@ class Parser(tokens: List<Token>) {
         val start = current
         val children = mutableListOf<Node>()
 
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             val result = parse()
             children.add(result)
         }
@@ -63,6 +63,10 @@ class Parser(tokens: List<Token>) {
         }
 
         var left = parse(level + 1)
+
+        if(current.name == LPAREN) {
+            left = parseFunctionCall(left)
+        }
 
         while (current.name in OPERATORS[level]) {
             val operation = current
@@ -116,7 +120,7 @@ class Parser(tokens: List<Token>) {
             return ObjectNode(token, token.value as Boolean, ObjType.BOOLEAN)
         }
 
-        if(token.name == IDENTIFIER) {
+        if (token.name == IDENTIFIER) {
             advance()
             return VarAccess(token)
         }
@@ -135,9 +139,13 @@ class Parser(tokens: List<Token>) {
             return parseIfStatement(token)
         }
 
-        if(token.name in UNARY_OPERATORS) {
+        if (token.name in UNARY_OPERATORS) {
             advance()
             return UnaryOperation(token, current, token.name, parse())
+        }
+
+        if (token.name == FUNCTION) {
+            return parseFunction()
         }
 
         throw ParseException("Unexpected token $token", token)
@@ -159,19 +167,76 @@ class Parser(tokens: List<Token>) {
         return IfNode(token, current, condition, trueNode, falseNode)
     }
 
-    private fun require(tokenType: TokenType): Token {
-        if (current.name == tokenType) {
+    private fun parseFunction(): Node {
+        val start = current
+        advance()
+        val functionName = require(IDENTIFIER).value as String
+        require(LPAREN)
+
+        val arguments = requireUntil(RPAREN) {
+            val arg = require(IDENTIFIER).value as String
+            optional(COMMA)
+            arg
+        }
+
+        val body = parse()
+
+        return FunctionNode(start, current, functionName, arguments, body)
+    }
+
+    fun parseFunctionCall(function: Node): Node {
+        val start = current
+        advance()
+        val arguments = requireUntil(RPAREN) {
+            val arg = parse()
+            optional(COMMA)
+            arg
+        }
+
+        return FunctionCall(start, function, arguments)
+    }
+
+    private fun require(vararg tokenType: TokenType): Token {
+        if (current.name in tokenType) {
             val result = current
             advance()
             return result
         }
 
-        throw ParseException("Expected $tokenType, got ${current.name}", current)
+        throw ParseException("Expected ${tokenType.joinToString()}, got ${current.name}", current)
+    }
+
+    private fun optional(vararg tokenType: TokenType): Token? {
+        if (current.name in tokenType) {
+            val result = current
+            advance()
+            return result
+        }
+
+        return null
     }
 
     private fun skipNewlines() {
-        while(current.name == NEWLINE) {
+        while (current.name == NEWLINE) {
             advance()
         }
+    }
+
+    private fun <T> requireUntil(tokenType: TokenType, action: (Int) -> (T)): List<T> {
+        val result = mutableListOf<T>()
+
+
+        var i = 0
+        while (current.name != tokenType) {
+            result.add(action.invoke(i++))
+
+            if (current.name == EOF) {
+                throw ParseException("Encountered EOF while parsing for $tokenType", current)
+            }
+        }
+
+        advance()
+
+        return result
     }
 }

@@ -1,8 +1,10 @@
 package parse
 
 import interpretText
+import nodes.nodes.FunctionNode
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class InterpreterTest {
 
@@ -33,6 +35,14 @@ class InterpreterTest {
         val output = interpretText(input)
         assertEquals(false, output)
     }
+
+    @Test
+    fun `modulus operator`() {
+        val input = "10 % 3"
+        val output = interpretText(input)
+        assertEquals(1, output)
+    }
+
 
     @Test
     fun `unary operator`() {
@@ -205,5 +215,40 @@ class InterpreterTest {
         """.trimIndent()
         val output = interpretText(input)
         assertEquals(-20, output)
+    }
+
+    @Test
+    fun `function declaration`() {
+        val input = """
+            fun test(a) {
+                a * a
+            }
+        """.trimIndent()
+        val output = interpretText(input)
+        assertTrue(output is FunctionNode)
+    }
+
+    @Test
+    fun `function declaration and call`() {
+        val input = """
+            fun test(a) {
+                a * a
+            }
+            test(10)
+        """.trimIndent()
+        val output = interpretText(input)
+        assertEquals(100, output)
+    }
+
+    @Test
+    fun `nested function`() {
+        val input = """
+            fun test(a) {
+                a * a
+            }
+            test(test(10))
+        """.trimIndent()
+        val output = interpretText(input)
+        assertEquals(10000, output)
     }
 }

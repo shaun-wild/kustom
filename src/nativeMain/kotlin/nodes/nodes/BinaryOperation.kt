@@ -34,6 +34,7 @@ class BinaryOperation(val left: Node, val operation: Token, val right: Node) :
                 GREATER_THAN -> left > right
                 LT_EQUAL -> left <= right
                 GT_EQUAL -> left >= right
+                MODULUS -> left % right
                 else -> throw fail("Undefined operation $left ${operation.name} $right")
             }
         }

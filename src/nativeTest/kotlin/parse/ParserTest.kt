@@ -4,6 +4,7 @@ import assertToString
 import parseText
 import parser.ParseException
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class ParserTest {
@@ -103,5 +104,12 @@ class ParserTest {
         val output = parseText(input)
 
         assertToString("call <get IDENTIFIER (println)>(test)", output)
+    }
+
+    @Test
+    fun `identifier containing keyword`() {
+        val input = "fun b(int, value) if(value > 0) true else false"
+        val output = parseText(input)
+        assertToString("fun b(int, value) if((get IDENTIFIER (value) > 0)) true else false", output)
     }
 }

@@ -1,13 +1,11 @@
 package parse
 
-import parser.ParseException
 import parser.lexer.Lexer
 import parser.lexer.token.TokenType
 import parser.lexer.token.TokenType.*
 import token
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 
 class LexerTest {
 
@@ -168,6 +166,17 @@ class LexerTest {
             .lex()
 
         assertEquals(listOf(token(MINUS), token(IDENTIFIER, "a"), EOF), output)
+    }
+
+    @Test
+    fun `keyword identifier`() {
+        val input = "value=5"
+        val output = Lexer(input)
+            .lex()
+
+        println(TokenType.REGEX)
+
+        assertEquals(listOf(token(IDENTIFIER, "value"), token(ASSIGN), token(INT, 5), EOF), output)
     }
 
     @Test

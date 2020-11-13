@@ -1,6 +1,7 @@
 package parser.lexer.token
 
-import parser.lexer.token.ObjType.*
+import parser.lexer.token.ObjType.BOOLEAN
+import parser.lexer.token.ObjType.NUMBER
 
 /**
  * TokenType is an enum representing all of the token's and their respective matches.
@@ -31,7 +32,9 @@ enum class TokenType(
      * */
     val copyValue: Boolean = (mapper != null),
 
-    val relatedTypes: Array<ObjType> = arrayOf()
+    val relatedTypes: Array<ObjType> = arrayOf(),
+
+    val keyword: Boolean = match?.let { KEYWORD_REGEX.matches(it) } ?: false
 ) {
     FLOAT(pattern = "\\d+[Ff]|\\d*\\.\\d+[fF]?", mapper = String::toFloat),
     INT(pattern = "\\d+", mapper = String::toInt),
@@ -56,8 +59,8 @@ enum class TokenType(
     NOT("!", relatedTypes = arrayOf(BOOLEAN)),
     AND("&&", relatedTypes = arrayOf(BOOLEAN)),
     OR("||", relatedTypes = arrayOf(BOOLEAN)),
-    VAR("var"),
-    VAL("val"),
+    VAR("var", keyword = true),
+    VAL("val", keyword = true),
     LPAREN("("),
     RPAREN(")"),
     LBRACE("{"),
@@ -74,13 +77,20 @@ enum class TokenType(
     NEWLINE("\n"), EOF;
 
     companion object {
+        val KEYWORD_REGEX = "[A-z][A-z0-9_]*".toRegex()
+
         val REGEX = values()
             .filter { it.regex != null }
             .joinToString("|") { "(${it.regex!!.pattern})" }
             .toRegex(setOf(RegexOption.DOT_MATCHES_ALL))
     }
 
-    val regex = (if (match != null) Regex.escape(match) else pattern)?.toRegex()
+    val regex = if (match != null) {
+        val matchRegex = Regex.escape(match)
+        if (keyword) "(?<![A-z0-9_])${matchRegex}(?![A-z0-9_])" else matchRegex
+    } else {
+        pattern
+    }?.toRegex()
 
     override fun toString(): String {
         if (match != null) {

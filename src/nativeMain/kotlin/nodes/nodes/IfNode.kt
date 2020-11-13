@@ -8,10 +8,12 @@ class IfNode(start: Token, end: Token, val condition: Node, val ifTrue: Node, va
     override fun visit(context: Context): Any? {
         val condition = condition.visit(context) as Boolean
 
-        if(condition) {
+        if (condition) {
             return ifTrue.visit(context)
         } else {
             return ifFalse?.visit(context)
         }
     }
+
+    override fun toString() = "if($condition) $ifTrue" + if (ifFalse != null) " else $ifFalse" else ""
 }

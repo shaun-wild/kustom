@@ -28,6 +28,24 @@ if(name == "Kustom") {
     println("You are awesome!")
 }
 ```
+## Usage
+
+Build the executable:
+
+```bash
+./gradlew assemble
+```
+
+The executable can be found in `build/bin/native/releaseExecutable`
+
+Execute:
+
+```bash
+kustom-native <file>
+```
+
+- **file** - Optional file path to be executed. If not provided, will begin
+interactive REPL.
 
 ## The future of Kustom
 

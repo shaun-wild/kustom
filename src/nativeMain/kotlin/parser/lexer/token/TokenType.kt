@@ -38,7 +38,7 @@ enum class TokenType(
 ) {
     FLOAT(pattern = "\\d+[Ff]|\\d*\\.\\d+[fF]?", mapper = String::toFloat),
     INT(pattern = "\\d+", mapper = String::toInt),
-    STRING(pattern = "\"(?:[^\"]|\\\\\")*[^\\\\]\"", copyValue = true, mapper = { it.subSequence(1, it.length - 1) }),
+    STRING(pattern = "\"(?:(?:[^\"]|\\\\\")*[^\\\\]|)\"", copyValue = true, mapper = { it.subSequence(1, it.length - 1) }),
     COMMENT(pattern = "\\/\\/.*", discard = true),
     BLOCK_COMMENT(pattern = "\\/\\*.*\\*\\/", discard = true),
     TRUE("true", mapper = String::toBoolean), FALSE("false", mapper = String::toBoolean),

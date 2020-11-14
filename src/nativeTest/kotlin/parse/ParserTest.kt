@@ -2,10 +2,7 @@ package parse
 
 import assertToString
 import parseText
-import parser.ParseException
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 
 class ParserTest {
 
@@ -38,7 +35,7 @@ class ParserTest {
         val input = "\"test\""
         val output = parseText(input)
 
-        assertToString("test", output)
+        assertToString("\"test\"", output)
     }
 
     @Test
@@ -75,7 +72,7 @@ class ParserTest {
         """.trimIndent()
         val output = parseText(input)
 
-        assertToString("{(25 + 2) hello}", output)
+        assertToString("{(25 + 2) \"hello\"}", output)
     }
 
     @Test
@@ -103,7 +100,7 @@ class ParserTest {
         val input = "println(\"test\")"
         val output = parseText(input)
 
-        assertToString("call <get IDENTIFIER (println)>(test)", output)
+        assertToString("call <get IDENTIFIER (println)>(\"test\")", output)
     }
 
     @Test
@@ -118,5 +115,14 @@ class ParserTest {
         val input = "a = [1, 2, 3]"
         val output = parseText(input)
         assertToString("(set IDENTIFIER (a) = [1, 2, 3])", output)
+    }
+
+    @Test
+    fun `empty string in if`() {
+        val input = """
+            if(result == "") test
+        """.trimIndent()
+        val output = parseText(input)
+        assertToString("if((get IDENTIFIER (result) == \"\")) get IDENTIFIER (test)", output)
     }
 }

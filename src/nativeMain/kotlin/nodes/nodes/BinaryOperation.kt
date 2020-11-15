@@ -24,8 +24,8 @@ class BinaryOperation(val left: Node, val operation: Token, val right: Node) :
 
         if (left is Boolean) {
             return when (operation.name) {
-                AND -> left and right.visit(context) as Boolean
-                OR -> left or right.visit(context) as Boolean
+                AND -> left && right.visit(context) as Boolean
+                OR -> left || right.visit(context) as Boolean
                 else -> throw fail("Undefined operation $left ${operation.name} $right")
             }
         }

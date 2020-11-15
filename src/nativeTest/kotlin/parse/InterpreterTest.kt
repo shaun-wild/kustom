@@ -308,4 +308,11 @@ class InterpreterTest {
         val output = interpretText(input)
         assertEquals(10, output)
     }
+
+    @Test
+    fun `short-circuit or`() {
+        val input = "5 > 2 || b"
+        val output = interpretText(input)
+        assertEquals(true, output)
+    }
 }

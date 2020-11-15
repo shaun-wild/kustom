@@ -4,8 +4,13 @@ import interpreter.Context
 import parser.lexer.token.ObjType
 import parser.lexer.token.Token
 import parser.lexer.token.TokenType
+import parser.lexer.token.TokenType.*
 
 class VarAccess(val identifier: Token) : Node(identifier) {
+
+    companion object {
+        val ASSIGN_TYPES = arrayOf(ASSIGN, PLUS_ASSIGN)
+    }
 
     val varName = identifier.value as String
 
@@ -23,7 +28,7 @@ class VarAccess(val identifier: Token) : Node(identifier) {
     }
 
     private fun isSetter(): Boolean {
-        return (parent as? BinaryOperation)?.operation?.name == TokenType.ASSIGN
+        return (parent as? BinaryOperation)?.operation?.name in ASSIGN_TYPES
     }
 
     private fun getType(): ObjType {

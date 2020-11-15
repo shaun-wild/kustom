@@ -42,6 +42,7 @@ enum class TokenType(
     COMMENT(pattern = "\\/\\/.*", discard = true),
     BLOCK_COMMENT(pattern = "\\/\\*.*\\*\\/", discard = true),
     TRUE("true", mapper = String::toBoolean), FALSE("false", mapper = String::toBoolean),
+    PLUS_ASSIGN("+=", relatedTypes = arrayOf(NUMBER)),
     PLUS("+", relatedTypes = arrayOf(NUMBER, ObjType.STRING)),
     MINUS("-", relatedTypes = arrayOf(NUMBER)),
     MULTIPLY("*", relatedTypes = arrayOf(NUMBER)),

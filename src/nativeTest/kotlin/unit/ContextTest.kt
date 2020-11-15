@@ -31,4 +31,12 @@ class ContextTest {
         context.setVariable(NUMBER, "a", false, 10)
         assertFailsWith<IllegalStateException> { context.setVariable(STRING, "a", true, "Hello") }
     }
+
+    @Test
+    fun `modify variable`() {
+        val context = Context()
+        context.setVariable(NUMBER, "a", true, 10)
+        context.modifyVariable(NUMBER, "a") { 200 }
+        assertEquals(200, context.getVariable(NUMBER, "a"))
+    }
 }

@@ -9,7 +9,6 @@ class Context {
 
     fun getVariable(type: ObjType, name: String, reassignable: Boolean = true): Any? {
         val key = TypeKey(type, name, reassignable)
-//        println("Trying to get $key in $variables")
         return variables.entries.find { it.key == key }?.value
     }
 
@@ -29,6 +28,13 @@ class Context {
         }
 
         return value
+    }
+
+    fun modifyVariable(type: ObjType, name: String, modifier: (Any?) -> Any?): Any? {
+        val current = getVariable(type, name)
+        val new = modifier.invoke(current)
+        setVariable(type, name, value = new)
+        return new
     }
 
     fun pushContext(context: Context): Context {

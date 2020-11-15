@@ -270,6 +270,17 @@ class InterpreterTest {
     }
 
     @Test
+    fun `plus assign`() {
+        val input = """
+            a = 5
+            a += 1
+            a
+        """.trimIndent()
+        val output = interpretText(input)
+        assertEquals(6, output)
+    }
+
+    @Test
     fun `access array`() {
         val input = """
             a = [1, 2, 3]

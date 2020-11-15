@@ -51,8 +51,13 @@ class BinaryOperation(val left: Node, val operation: Token, val right: Node) :
             if (left.name == IDENTIFIER) {
                 val varName = left.value as String
 
-                if (right != null) {
-                    return context.setVariable(ObjType.getType(right::class), varName, true, right)
+                when(operation.name) {
+                    ASSIGN -> {
+                        if (right != null) {
+                            return context.setVariable(ObjType.getType(right::class), varName, true, right)
+                        }
+                    }
+                    PLUS_ASSIGN -> return context.modifyVariable(ObjType.NUMBER, varName) {it as Number + 1}
                 }
             }
         }

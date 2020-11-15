@@ -298,4 +298,14 @@ class InterpreterTest {
         val output = interpretText(input)
         assertEquals(10, output)
     }
+
+    @Test
+    fun `no arg function`() {
+        val input = """
+            fun test(test) { 10 }
+            test()
+        """.trimIndent()
+        val output = interpretText(input)
+        assertEquals(10, output)
+    }
 }

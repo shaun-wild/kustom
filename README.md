@@ -1,6 +1,6 @@
 # Kustom
 
-Kustom is an interpreted language, written in Kotlin native. Kustom is design with ease-of-use in mind and imposes
+Kustom is an interpreted language, written in Kotlin native. Kustom is designed with ease-of-use in mind and imposes
 minimal syntax restrictions on users.
 
 ## Key Features
@@ -8,14 +8,14 @@ minimal syntax restrictions on users.
 #### Everything is an expression!
 In Kustom, every statement is an expression, meaning the syntax is very fluid and intuitive.
 
-#### Turning Complete
+#### Turing Complete
 You can do everything in Kustom that you can do in Java, Node, Kotlin (etc)
 
 #### Multiplatform
 Kustom can be ran on any platform where the interpreter is present.
 
 #### Untyped
-Types are restrictive! Kustom has no strict typing 
+Types are restrictive! Kustom has no strict typing.
 
 ## Syntax
 
@@ -50,5 +50,5 @@ interactive REPL.
 ## The future of Kustom
 
 - Full OO and functional support
-- Compilation to JVM Byecode
+- Compilation to JVM Bytecode
 - Compilation to native

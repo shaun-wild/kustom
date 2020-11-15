@@ -11,7 +11,7 @@ class Parser(tokens: List<Token>) {
     companion object {
         /** In order of priority, Low -> High */
         val OPERATORS = arrayOf(
-            arrayOf(ASSIGN, PLUS_ASSIGN),
+            arrayOf(ASSIGN, PLUS_ASSIGN, ELVIS),
             arrayOf(EQUALS, NOT_EQUAL),
             arrayOf(AND, OR),
             arrayOf(LESS_THAN, GREATER_THAN, LT_EQUAL, GT_EQUAL),

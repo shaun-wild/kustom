@@ -69,6 +69,10 @@ class BinaryOperation(val left: Node, val operation: Token, val right: Node) :
             }
         }
 
+        if(operation.name == ELVIS) {
+            return left ?: right
+        }
+
         throw fail("Undefined operation $left ${operation.name} $right")
     }
 

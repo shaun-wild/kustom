@@ -289,4 +289,13 @@ class InterpreterTest {
         val output = interpretText(input)
         assertEquals(2, output)
     }
+
+    @Test
+    fun `elvis operator`() {
+        val input = """
+            a ?: 10
+        """.trimIndent()
+        val output = interpretText(input)
+        assertEquals(10, output)
+    }
 }

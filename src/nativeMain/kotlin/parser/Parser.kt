@@ -80,7 +80,6 @@ class Parser(tokens: List<Token>) {
             left = BinaryOperation(left, operation, right)
         }
 
-        println("Returning $left")
         return left
     }
 

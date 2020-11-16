@@ -16,6 +16,20 @@ class BinaryOperation(val left: Node, val operation: Token, val right: Node) :
 
     override fun visit(context: Context): Any? {
         val left = left.visit(context)
+
+        if(operation.name == ELVIS) {
+            return left ?: right.visit(context)
+        }
+
+
+        if (left is Boolean) {
+            return when (operation.name) {
+                AND -> left && right.visit(context) as Boolean
+                OR -> left || right.visit(context) as Boolean
+                else -> throw fail("Undefined operation $left ${operation.name} $right")
+            }
+        }
+
         val right = right.visit(context)
 
         if (operation.name == EQUALS) {
@@ -35,14 +49,6 @@ class BinaryOperation(val left: Node, val operation: Token, val right: Node) :
                 LT_EQUAL -> left <= right
                 GT_EQUAL -> left >= right
                 MODULUS -> left % right
-                else -> throw fail("Undefined operation $left ${operation.name} $right")
-            }
-        }
-
-        if (left is Boolean && right is Boolean) {
-            return when (operation.name) {
-                AND -> left and right
-                OR -> left or right
                 else -> throw fail("Undefined operation $left ${operation.name} $right")
             }
         }
@@ -67,10 +73,6 @@ class BinaryOperation(val left: Node, val operation: Token, val right: Node) :
             if (left is String) {
                 return left + right
             }
-        }
-
-        if(operation.name == ELVIS) {
-            return left ?: right
         }
 
         throw fail("Undefined operation $left ${operation.name} $right")

@@ -17,8 +17,10 @@ class FunctionCall(start: Token, val function: Node, val arguments: List<Node>) 
         val funContext = context.pushContext(Context())
 
         function.arguments.forEachIndexed { index, arg ->
-            val argument = arguments[index].visit(context)
-            funContext.setVariable(ObjType.ANY, arg, false, argument)
+            if(arguments.size > index) {
+                val argument = arguments[index].visit(context)
+                funContext.setVariable(ObjType.ANY, arg, false, argument)
+            }
         }
 
         val result = function.body.visit(funContext)

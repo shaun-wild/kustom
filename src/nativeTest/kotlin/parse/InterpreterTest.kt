@@ -298,4 +298,21 @@ class InterpreterTest {
         val output = interpretText(input)
         assertEquals(10, output)
     }
+
+    @Test
+    fun `no arg function`() {
+        val input = """
+            fun test(test) { 10 }
+            test()
+        """.trimIndent()
+        val output = interpretText(input)
+        assertEquals(10, output)
+    }
+
+    @Test
+    fun `short-circuit or`() {
+        val input = "5 > 2 || b"
+        val output = interpretText(input)
+        assertEquals(true, output)
+    }
 }
